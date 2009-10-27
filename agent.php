@@ -11,6 +11,11 @@ function install($sites_dir)
 	$src_dir = dirname(__FILE__);
 	$home_dir = $_ENV['HOME'];
 	$dst_dir = "$home_dir/.$service_name";
+	
+	@mkdir($dst_dir);
+	@mkdir($dst_dir.'/var');
+	`cp -R -f $src_dir/* $dst_dir`;		
+
 	$conf = <<<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -31,10 +36,7 @@ function install($sites_dir)
 </dict>
 </plist>
 PLIST;
-	
-	@mkdir($dst_dir);
-	`cp -R -f $src_dir/* $dst_dir`;
-	
+
 	file_put_contents(
 		"$home_dir/Library/LaunchAgents/$service_name.plist", 
 		$conf
@@ -46,8 +48,8 @@ function update_hosts($hosts, $vhosts)
 	$service_dir = dirname(__FILE__);
 	$command = "php $service_dir/update_hosts.php";
 	
-	file_put_contents($service_dir.'/hosts.conf', join("\n", $hosts));
-	file_put_contents($service_dir.'/vhosts.conf', join("\n", $vhosts));
+	file_put_contents($service_dir.'/var/hosts.conf', join("\n", $hosts));
+	file_put_contents($service_dir.'/var/vhosts.conf', join("\n", $vhosts));
 	
 	system(
 		"osascript -e 'do shell script \"$command\" with administrator privileges'", 
@@ -75,6 +77,9 @@ function generate_vhost_config($site_root, $site_name, $port = 80)
       Allow from All
    </Directory>
 </VirtualHost>
+VHOST;
+	if (USE_BONJOURE) 
+		$conf .= <<<VHOST
 <IfModule bonjour_module>
    Listen $shared_port
    <VirtualHost *:$shared_port>
@@ -94,7 +99,7 @@ VHOST;
 
 function update_if_modified_sites_list($sites)
 {
-	$sites_file = dirname(__FILE__).'/sites.txt';
+	$sites_file = dirname(__FILE__).'/var/sites.txt';
 	$sites_data = join("\n", $sites);
 	if (@file_get_contents($sites_file) != $sites_data) {
 		file_put_contents($sites_file, $sites_data);

@@ -1,8 +1,9 @@
 <?php
 
-define('SERVICE_NAME', 'vhost_configurator');
-define('SERVICE_CAPTION', 'Vhosts configurator');
+define('SERVICE_NAME', 'autovhostconf');
+define('SERVICE_CAPTION', 'AutoVhostConfigurator');
 define('ALLOW_PRECONFIGURE_HTTPD', false);
+define('USE_BONJOURE', false);
 
 define('MESSAGE_INFO_ICON', 'info.png');
 define('MESSAGE_ERROR_ICON', 'error.png');

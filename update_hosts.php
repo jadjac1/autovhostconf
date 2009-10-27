@@ -55,5 +55,5 @@ if (!check_admin_privileges()) {
 }
 
 $service_dir = dirname(__FILE__);
-update_hosts(file_get_contents("$service_dir/hosts.conf"));
-update_httpd_conf(file_get_contents("$service_dir/vhosts.conf"));
+update_hosts(file_get_contents("$service_dir/var/hosts.conf"));
+update_httpd_conf(file_get_contents("$service_dir/var/vhosts.conf"));
